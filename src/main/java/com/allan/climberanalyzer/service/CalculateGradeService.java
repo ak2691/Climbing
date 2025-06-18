@@ -30,9 +30,21 @@ public class CalculateGradeService {
         pullingStrengthByWeight = (int) Math.round(((double) pullingStrength / bodyweight) * 100) + 100;
         int fingerGrade = fingerRepo.findClosestGrade(fingerStrengthByWeight);
         int pullingGrade = pullingRepo.findClosestGrade(pullingStrengthByWeight);
-
-        return "Grade for your finger strength: " + fingerGrade + " \nGrade for your pulling strength: " +
-                pullingGrade + " \nOverall grade for your strength levels: " + (fingerGrade + pullingGrade) / 2;
+        int overallGrade = (fingerGrade + pullingGrade) / 2;
+        String fingerOutput = Integer.toString(fingerGrade);
+        String pullOutput = Integer.toString(pullingGrade);
+        String overallOutput = Integer.toString(overallGrade);
+        if (fingerGrade >= 17) {
+            fingerOutput = "17+";
+        }
+        if (pullingGrade >= 17) {
+            pullOutput = "17+";
+        }
+        if ((fingerGrade + pullingGrade) / 2 >= 17) {
+            overallOutput = "17+";
+        }
+        return "Grade for your finger strength: " + fingerOutput + " \nGrade for your pulling strength: " +
+                pullOutput + " \nOverall grade for your strength levels: " + overallOutput;
     }
 
 }
