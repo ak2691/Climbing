@@ -25,10 +25,13 @@ public class CalculateGradeService {
     private int fingerStrengthByWeight;
     private int pullingStrengthByWeight;
 
+    // Edge factor determined from Eva lopez protocols, Vigouroux studies on four
+    // finger hangs, and Beastmaker test data
     public double calculateEdgeFactor(int edgeSize) {
         return Math.exp(-0.06 * (20 - edgeSize));
     }
 
+    // Rohmert's curve data estimation
     public double calculateTimeFactor(int hangTime) {
         return Math.pow((double) 7 / hangTime, 0.2);
     }
@@ -41,6 +44,8 @@ public class CalculateGradeService {
 
     }
 
+    // Conversion of one rep max of Epley's formula to two rep max for the purpose
+    // of our data. 1 / (1+ (2/30))
     public int EpleyFormulaTwoRepMax(double num, int reps) {
         return (int) (Math.round(num * (1 + (reps / 30.0)) * (15.0 / 16.0)) * 100);
     }
