@@ -1,5 +1,8 @@
 package com.allan.climberanalyzer.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,29 +25,57 @@ public class CalculateGradeService {
     private int fingerStrengthByWeight;
     private int pullingStrengthByWeight;
 
-    public String calculateClimbingGrade(InputNumbers numbers) {
+    public double calculateEdgeFactor(int edgeSize) {
+        return Math.exp(-0.06 * (20 - edgeSize));
+    }
+
+    public double calculateTimeFactor(int hangTime) {
+        return Math.pow((double) 7 / hangTime, 0.2);
+    }
+
+    public int calculateFingerBodyWeightPercentage(int fingerStrength, int bodyweight, int edgeSize, int hangTime) {
+        double edgeFactor = calculateEdgeFactor(edgeSize);
+        double timeFactor = calculateTimeFactor(hangTime);
+        double mvc7 = (double) fingerStrength / bodyweight;
+        return (int) (Math.round((mvc7 / (edgeFactor * timeFactor)) * 100));
+
+    }
+
+    public int EpleyFormulaTwoRepMax(double num, int reps) {
+        return (int) (Math.round(num * (1 + (reps / 30.0)) * (15.0 / 16.0)) * 100);
+    }
+
+    public List<Integer> calculateClimbingGrade(InputNumbers numbers) {
         bodyweight = numbers.getBodyweight();
         fingerStrength = numbers.getFingerStrength();
         pullingStrength = numbers.getPullingStrength();
-        fingerStrengthByWeight = (int) Math.round(((double) fingerStrength / bodyweight) * 100) + 100;
-        pullingStrengthByWeight = (int) Math.round(((double) pullingStrength / bodyweight) * 100) + 100;
+        int hangTime = numbers.getHangTime();
+        int edgeSize = numbers.getEdgeSize();
+        int reps = numbers.getReps();
+        fingerStrengthByWeight = calculateFingerBodyWeightPercentage(fingerStrength, bodyweight, edgeSize,
+                hangTime) + 100;
+        pullingStrengthByWeight = (int) EpleyFormulaTwoRepMax((double) pullingStrength / bodyweight, reps) + 100;
         int fingerGrade = fingerRepo.findClosestGrade(fingerStrengthByWeight);
         int pullingGrade = pullingRepo.findClosestGrade(pullingStrengthByWeight);
         int overallGrade = (fingerGrade + pullingGrade) / 2;
-        String fingerOutput = Integer.toString(fingerGrade);
-        String pullOutput = Integer.toString(pullingGrade);
-        String overallOutput = Integer.toString(overallGrade);
+
+        List<Integer> ret = new ArrayList<>();
         if (fingerGrade >= 17) {
-            fingerOutput = "17+";
+            fingerGrade = 17;
         }
         if (pullingGrade >= 17) {
-            pullOutput = "17+";
+            pullingGrade = 17;
         }
-        if ((fingerGrade + pullingGrade) / 2 >= 17) {
-            overallOutput = "17+";
+        if (overallGrade >= 17) {
+            overallGrade = 17;
         }
-        return "Grade for your finger strength: " + fingerOutput + " \nGrade for your pulling strength: " +
-                pullOutput + " \nOverall grade for your strength levels: " + overallOutput;
+        ret.add(fingerGrade);
+        ret.add(pullingGrade);
+        ret.add(overallGrade);
+        ret.add(numbers.getOverHangGrade());
+        ret.add(numbers.getVerticalGrade());//
+        ret.add(numbers.getSlabGrade());
+        return ret;
     }
 
 }
