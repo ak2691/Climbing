@@ -1,5 +1,7 @@
 package com.allan.climberanalyzer.controller;
 
+import java.net.ResponseCache;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,7 @@ import com.allan.climberanalyzer.service.CalculateGradeService;
 
 @CrossOrigin
 @RestController
-public class GradeController {
+public class AnalyzerController {
 
     @Autowired
     CalculateGradeService calculateGradeService;
@@ -35,4 +37,5 @@ public class GradeController {
         }
 
     }
+
 }

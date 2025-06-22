@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.allan</groupId>
-	<artifactId>producttracker</artifactId>
+	<artifactId>climberanalyzer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>producttracker</name>
+	<name>climberanalyzer</name>
 	<description>Project to track climbing products</description>
 	<url/>
 	<licenses>
