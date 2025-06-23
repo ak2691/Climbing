@@ -47,7 +47,7 @@ public class CalculateGradeService {
     // Conversion of one rep max of Epley's formula to two rep max for the purpose
     // of our data. 1 / (1+ (2/30))
     public int EpleyFormulaTwoRepMax(double num, int reps) {
-        return (int) (Math.round(num * (1 + (reps / 30.0)) * (15.0 / 16.0)) * 100);
+        return (int) Math.round((num * (1 + (reps / 30.0)) * (15.0 / 16.0)) * 100);
     }
 
     public List<Integer> calculateClimbingGrade(InputNumbers numbers) {
@@ -74,12 +74,13 @@ public class CalculateGradeService {
         if (overallGrade >= 17) {
             overallGrade = 17;
         }
-        ret.add(fingerGrade);
-        ret.add(pullingGrade);
-        ret.add(overallGrade);
+        System.out.println(pullingGrade);
         ret.add(numbers.getOverHangGrade());
         ret.add(numbers.getVerticalGrade());//
         ret.add(numbers.getSlabGrade());
+        ret.add(fingerGrade);
+        ret.add(pullingGrade);
+        ret.add(overallGrade);
         return ret;
     }
 

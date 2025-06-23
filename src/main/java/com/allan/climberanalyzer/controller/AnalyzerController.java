@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.allan.climberanalyzer.DTOClass.InputNumbers;
-
+import com.allan.climberanalyzer.DTOClass.UserResult;
+import com.allan.climberanalyzer.service.AnalyzeResultService;
 import com.allan.climberanalyzer.service.CalculateGradeService;
 
 @CrossOrigin
@@ -22,6 +23,9 @@ public class AnalyzerController {
 
     @Autowired
     CalculateGradeService calculateGradeService;
+
+    @Autowired
+    AnalyzeResultService analyzeResultService;
 
     @GetMapping("/calculator")
     public String getCalculator() {
@@ -36,6 +40,15 @@ public class AnalyzerController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PostMapping("/api/weakness")
+    public ResponseEntity<?> analyzeResults(@RequestBody UserResult userResult) {
+        try {
+            return new ResponseEntity<>(analyzeResultService.analyzeBasicWeaknesses(userResult), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
