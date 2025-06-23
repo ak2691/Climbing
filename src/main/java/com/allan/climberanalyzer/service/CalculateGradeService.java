@@ -74,7 +74,7 @@ public class CalculateGradeService {
         if (overallGrade >= 17) {
             overallGrade = 17;
         }
-        System.out.println(pullingGrade);
+        // System.out.println(pullingGrade);
         ret.add(numbers.getOverHangGrade());
         ret.add(numbers.getVerticalGrade());//
         ret.add(numbers.getSlabGrade());

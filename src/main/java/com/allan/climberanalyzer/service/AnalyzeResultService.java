@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.allan.climberanalyzer.DTOClass.UserResult;
+import com.allan.climberanalyzer.model.AnalysisModel;
 import com.allan.climberanalyzer.repo.ExercisesRepo;
 import com.allan.climberanalyzer.repo.WeaknessesRepo;
 
 @Service
+
 public class AnalyzeResultService {
 
     @Autowired
@@ -19,6 +21,9 @@ public class AnalyzeResultService {
 
     @Autowired
     ExercisesRepo exerciseRepo;
+
+    @Autowired
+    AnalysisModel analysisModel;
 
     public int overHangPhaseOne(int fingerGrade, int pullingGrade, int grade) {
         int expectedGrade = (int) Math.round(fingerGrade * 0.6 + pullingGrade * 0.4);
@@ -88,12 +93,13 @@ public class AnalyzeResultService {
         return level;
     }
 
-    public List<String> analyzeBasicWeaknesses(UserResult userResult) {
+    public AnalysisModel analyzeBasicWeaknesses(UserResult userResult) {
         int overHangGrade = userResult.getOverHangGrade();
         int verticalGrade = userResult.getVerticalGrade();
         int slabGrade = userResult.getSlabGrade();
         int calculatedFingerStrengthGrade = userResult.getCalculatedFingerStrengthGrade();
         int calculatedPullingStrengthGrade = userResult.getCalculatedPullingStrengthGrade();
+        int overallGrade = (int) Math.round(((double) overHangGrade + verticalGrade) / 2);
         // logic to deal with all these numbers
 
         // Prioritize finger strength and pulling strength
@@ -107,28 +113,41 @@ public class AnalyzeResultService {
                 verticalGrade);
 
         // hard coding stuff testing for now
-        List<String> results = new ArrayList<>();
+
         if (phaseOneOverHang == -1) {
-            results.add(
+            analysisModel.setOverHangAnalysis(
                     "Out-climbing your physical strengths. Good technique, could use additional strength training.");
+
         } else if (phaseOneOverHang == 1) {
-            results.add("Strong, but can use additional technique work. Tension, core, beta reading.");
+            analysisModel
+                    .setOverHangAnalysis("Strong, but can use additional technique work. Tension, core, beta reading.");
         } else {
-            results.add("On-par with your expected grade! Keep on climbing.");
+            analysisModel.setOverHangAnalysis("On-par with your expected grade! Keep on climbing.");
         }
         if (phaseOneVertical == -1) {
-            results.add(
+            analysisModel.setVerticalAnalysis(
                     "Out-climbing your physical strengths. Good technique, could use additional strength training.");
         } else if (phaseOneOverHang == 1) {
-            results.add(
+            analysisModel.setVerticalAnalysis(
                     "Strong, but can use additional technique work. Beta reading, better use of legs, flagging, body positioning.");
         } else {
-            results.add("On-par with your expected grade! Keep on climbing.");
+            analysisModel.setVerticalAnalysis("On-par with your expected grade! Keep on climbing.");
+        }
+        if (slabGrade < overallGrade) {
+            analysisModel.setSlabAnalysis(
+                    "Your slab climbing is relatively weak compared to your other styles. Balance, footwork, and body positioning are important skills to work on");
+
+        } else if (slabGrade > overallGrade) {
+            analysisModel.setSlabAnalysis(
+                    "Your slab climbing is relatively weak compared to your other styles. Balance, footwork, and body positioning are important skills to work on");
+
+        } else {
+            analysisModel.setSlabAnalysis("On-par with your expected grade! Keep on climbing.");
         }
 
         //
 
-        return results;
+        return analysisModel;
         //
     }
 }
