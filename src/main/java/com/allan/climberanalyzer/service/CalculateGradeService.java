@@ -28,26 +28,29 @@ public class CalculateGradeService {
     // Edge factor determined from Eva lopez protocols, Vigouroux studies on four
     // finger hangs, and Beastmaker test data
     public double calculateEdgeFactor(int edgeSize) {
-        return Math.exp(-0.06 * (20 - edgeSize));
+        return Math.exp(-0.02 * (20 - edgeSize));
     }
 
     // Rohmert's curve data estimation
     public double calculateTimeFactor(int hangTime) {
-        return Math.pow((double) 7 / hangTime, 0.2);
+        return Math.pow((double) 7 / hangTime, 0.15);
     }
 
     public int calculateFingerBodyWeightPercentage(int fingerStrength, int bodyweight, int edgeSize, int hangTime) {
         double edgeFactor = calculateEdgeFactor(edgeSize);
         double timeFactor = calculateTimeFactor(hangTime);
-        double mvc7 = (double) fingerStrength / bodyweight;
-        return (int) (Math.round((mvc7 / (edgeFactor * timeFactor)) * 100));
+        double mvc7 = (double) fingerStrength + bodyweight;
+        double factor = (mvc7 / bodyweight) / (edgeFactor * timeFactor);
+        return (int) (Math.round(factor * 100));
 
     }
 
     // Conversion of one rep max of Epley's formula to two rep max for the purpose
     // of our data. 1 / (1+ (2/30))
-    public int EpleyFormulaTwoRepMax(double num, int reps) {
-        return (int) Math.round((num * (1 + (reps / 30.0)) * (15.0 / 16.0)) * 100);
+    public int EpleyFormulaTwoRepMax(double strength, double bodyweight, int reps) {
+        double load = strength + bodyweight;
+        double factor = (load * (1 + (reps / 30.0)) * (15.0 / 16.0)) / bodyweight;
+        return (int) Math.round(factor * 100);
     }
 
     public List<Integer> calculateClimbingGrade(InputNumbers numbers) {
@@ -58,8 +61,8 @@ public class CalculateGradeService {
         int edgeSize = numbers.getEdgeSize();
         int reps = numbers.getReps();
         fingerStrengthByWeight = calculateFingerBodyWeightPercentage(fingerStrength, bodyweight, edgeSize,
-                hangTime) + 100;
-        pullingStrengthByWeight = (int) EpleyFormulaTwoRepMax((double) pullingStrength / bodyweight, reps) + 100;
+                hangTime);
+        pullingStrengthByWeight = (int) EpleyFormulaTwoRepMax((double) pullingStrength, (double) bodyweight, reps);
         int fingerGrade = fingerRepo.findClosestGrade(fingerStrengthByWeight);
         int pullingGrade = pullingRepo.findClosestGrade(pullingStrengthByWeight);
         int overallGrade = (fingerGrade + pullingGrade) / 2;

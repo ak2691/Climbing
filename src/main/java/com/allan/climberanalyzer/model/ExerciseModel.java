@@ -15,4 +15,5 @@ public class ExerciseModel {
     private int id;
     private String exercise;
     private String category;
+    private String priority;
 }

@@ -1,0 +1,146 @@
+{
+    "skill_deficit": {
+        "minor": {
+            "title": "Minor Skill Deficit",
+            "priority_level": "minor",
+            "mentality": "This minor gap means you're climbing well, but with some small refinements to your technique and strategy, you can unlock your next grade.",
+            "routines": [
+                {
+                    "name": "Constraint Drills",
+                    "description": "Force yourself to be more precise and break sloppy habits by adding a rule to your climbing on terrain you know well.",
+                    "protocol": "Choose a climb 2-3 grades below your max and try it with a constraint like: 1) 'Silent Feet': No noise on foot placements. 2) 'No Readjusting': Once a hand or foot is placed, it cannot be moved."
+                },
+                {
+                    "name": "Video Analysis",
+                    "description": "The camera is an honest coach. Film yourself on attempts at your limit to spot inefficiencies you can't feel while climbing.",
+                    "protocol": "Record your attempts and pay close attention to your body position, pacing, and hip movement. Compare it to videos of more experienced climbers on a similar style."
+                }
+            ]
+        },
+        "moderate": {
+            "title": "Moderate Skill Deficit",
+            "priority_level": "moderate",
+            "mentality": "There is a clear disconnect between your physical strength and your climbing grade. This is great news—it means your fastest path to improvement is by focusing on skill. Your priority should be deliberate, on-the-wall practice.",
+            "routines": [
+                {
+                    "name": "Movement Library Day",
+                    "description": "Dedicate an entire session to one or two specific climbing techniques. The goal is not to send hard, but to understand and execute fundamental movements correctly.",
+                    "protocol": "Pick a theme for the day (e.g., 'Drop-Knees' or 'Heel Hooks'). Find 5-6 different problems that require this move and work on them exclusively."
+                },
+                {
+                    "name": "Tactical Application",
+                    "description": "Improve your ability to read a route and conserve energy before you even touch the wall.",
+                    "protocol": "Before getting on a new climb, stand back and visualize the entire sequence. Mime the moves and articulate your plan. The goal is to climb smarter, not just harder."
+                }
+            ]
+        },
+        "major": {
+            "title": "Major Skill Deficit",
+            "priority_level": "major",
+            "mentality": "You have a massive strength foundation, but you're leaving a lot of potential on the table due to inefficient movement. Your #1 focus should be a 'back-to-basics' approach to rebuild your technique. Place your strength training on maintenance (1x per week) and become a student of movement.",
+            "routines": [
+                {
+                    "name": "The Mileage Reset",
+                    "description": "You need to unlearn bad habits by ingraining good ones through high volumes of easy climbing where you can focus entirely on perfect form.",
+                    "protocol": "For the next 4 weeks, spend 80% of your climbing time on routes 3-4 V-grades below your max. The goal is to climb a huge number of problems with fluid, beautiful technique."
+                },
+                {
+                    "name": "Become a Slab & Vertical Specialist",
+                    "description": "You are likely avoiding the climbs that would teach you the most. These styles cannot be solved with brute force and are honest teachers of balance and precision.",
+                    "protocol": "Dedicate at least one full session per week exclusively to slab and technical vertical climbs. Embrace the struggle; this is where your growth lies."
+                }
+            ]
+        }
+    },
+    "finger_strength_weakness": {
+        "minor": {
+            "title": "Minor Finger Strength Weakness",
+            "priority_level": "minor",
+            "mentality": "Your finger strength is slightly lagging, but it doesn't require a massive overhaul of your training. You can address this with supplemental work that fits around your regular climbing.",
+            "routines": [
+                {
+                    "name": "Post-Session Hangboard",
+                    "description": "A short, low-volume hangboard session done at the end of your climbing session to provide a targeted stimulus without requiring a separate day.",
+                    "protocol": "After your climbing session, rest briefly, then perform 3-4 sets of 10-second hangs on a 20mm edge. Rest 2-3 minutes between sets."
+                },
+                {
+                    "name": "Targeted Bouldering",
+                    "description": "Dedicate one of your weekly bouldering sessions to intentionally working on your weakness by choosing appropriate climbs.",
+                    "protocol": "During one session per week, ensure at least 50% of your climbing is on routes that are crimpy or feature the small holds you want to improve on."
+                }
+            ]
+        },
+        "moderate": {
+            "title": "Moderate Finger Strength Weakness",
+            "priority_level": "moderate",
+            "mentality": "This is a clear bottleneck that is holding you back. Addressing it requires a dedicated and consistent training stimulus. This should become a standard part of your weekly schedule.",
+            "routines": [
+                {
+                    "name": "Max Hangs Protocol",
+                    "description": "This is the gold standard for building raw finger strength. It requires a dedicated session after a thorough warm-up.",
+                    "protocol": "Perform 5-6 sets of 10-second hangs on a 20mm edge. Rest 3 minutes between sets. The hold/weight should be challenging enough that you could only hang for ~13 seconds if you went to failure. Do this twice a week."
+                },
+                {
+                    "name": "Strength-Endurance (Repeaters)",
+                    "description": "Use this if you struggle with sequences of multiple hard moves, not just a single hard grip.",
+                    "protocol": "Perform a set of hangs consisting of 7 seconds on, 3 seconds off, repeated 6 times. This is one set. Rest 3-5 minutes and perform a total of 3-4 sets."
+                }
+            ]
+        },
+        "major": {
+            "title": "Major Finger Strength Weakness",
+            "priority_level": "major",
+            "mentality": "This is your primary physical limiter. Fixing it should be your highest training priority. This calls for a focused and intense plan.",
+            "routines": [
+                {
+                    "name": "Focused Strength Block (Weighted Hangs)",
+                    "description": "For a weakness this significant, you likely need to add weight to your hangs to continue driving adaptation. This should be the focus of a 4-6 week training block.",
+                    "protocol": "Use a weight belt or vest to add weight to your Max Hangs. Find a weight that makes a 10-second hang feel very challenging. Perform 5 sets, twice a week. Be extra vigilant about perfect form and listening to your body."
+                }
+            ]
+        }
+    },
+    "pull_strength_weakness": {
+        "minor": {
+            "title": "Minor Pulling Strength Weakness",
+            "priority_level": "minor",
+            "mentality": "Your overall power is good, but you could benefit from some supplemental work to improve your pulling endurance and lock-off strength on steeper climbs.",
+            "routines": [
+                {
+                    "name": "Post-Session Pulls",
+                    "description": "Build pulling endurance without requiring a separate training day.",
+                    "protocol": "After your climbing session, perform 3 sets of pull-ups to about 80% of your max reps. Rest 3 minutes between sets."
+                },
+                {
+                    "name": "On-the-Wall Lock-offs",
+                    "description": "Practice static strength in a more climbing-specific way.",
+                    "protocol": "Find a steep wall with good holds. Practice holding a 'lock-off' position with your arm bent at 90 degrees for 5-10 seconds. Do this several times on each arm."
+                }
+            ]
+        },
+        "moderate": {
+            "title": "Moderate Pulling Strength Weakness",
+            "priority_level": "moderate",
+            "mentality": "Your ability to execute powerful moves is a clear bottleneck. Building your pulling strength requires dedicated, consistent work and should be a scheduled part of your training.",
+            "routines": [
+                {
+                    "name": "Weighted Pull-ups Protocol",
+                    "description": "The most effective way to build raw pulling strength and make bodyweight pulls feel easier.",
+                    "protocol": "After a full warm-up, perform 5 sets of 5 reps of weighted pull-ups. Choose a weight that makes the last rep of each set very difficult but possible with good form. Do this twice a week."
+                }
+            ]
+        },
+        "major": {
+            "title": "Major Pulling Strength Weakness",
+            "priority_level": "major",
+            "mentality": "Your lack of pulling power is a primary factor preventing you from reaching the next level on steep or dynamic climbs. This requires an aggressive, high-priority training plan.",
+            "routines": [
+                {
+                    "name": "Focused Pulling Block",
+                    "description": "Dedicate 4-6 weeks to a pulling strength phase. Train it twice a week, focusing on both max strength and power.",
+                    "protocol": "Session 1 (Max Strength): Heavy weighted pull-ups in the 3-5 rep range. Session 2 (Power): Bodyweight pull-ups performed as explosively as possible for 5-6 sets of 3-5 reps."
+                }
+            ]
+        }
+    }
+}

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.allan.climberanalyzer.DTOClass.InputNumbers;
 import com.allan.climberanalyzer.DTOClass.UserResult;
 import com.allan.climberanalyzer.service.AnalyzeResultService;
+import com.allan.climberanalyzer.service.AnalyzeResultsTwoService;
 import com.allan.climberanalyzer.service.CalculateGradeService;
 
 @CrossOrigin
@@ -26,6 +27,9 @@ public class AnalyzerController {
 
     @Autowired
     AnalyzeResultService analyzeResultService;
+
+    @Autowired
+    AnalyzeResultsTwoService analyzeResultsTwoService;
 
     @GetMapping("/calculator")
     public String getCalculator() {
@@ -42,13 +46,23 @@ public class AnalyzerController {
 
     }
 
-    @PostMapping("/api/weakness")
+    @PostMapping("/api/analyzefirst")
     public ResponseEntity<?> analyzeResults(@RequestBody UserResult userResult) {
         try {
             return new ResponseEntity<>(analyzeResultService.analyzeBasicWeaknesses(userResult), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/api/analyzesecond")
+    public ResponseEntity<?> analyzeResultsTwo(@RequestBody UserResult userResult) {
+        try {
+            return new ResponseEntity<>(analyzeResultsTwoService.analyzeSpecificWeaknesses(userResult), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
 }
