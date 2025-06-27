@@ -1,4 +1,4 @@
-package com.allan.climberanalyzer.model;
+package com.allan.climberanalyzer.analyzer.model;
 
 import org.springframework.stereotype.Component;
 

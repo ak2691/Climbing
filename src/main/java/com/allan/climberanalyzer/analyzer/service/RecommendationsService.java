@@ -1,4 +1,4 @@
-package com.allan.climberanalyzer.service;
+package com.allan.climberanalyzer.analyzer.service;
 
 import java.io.IOException;
 import java.io.InputStream;

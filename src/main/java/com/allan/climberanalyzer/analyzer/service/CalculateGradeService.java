@@ -1,4 +1,4 @@
-package com.allan.climberanalyzer.service;
+package com.allan.climberanalyzer.analyzer.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.allan.climberanalyzer.DTOClass.InputNumbers;
-
-import com.allan.climberanalyzer.repo.FingerRepo;
-import com.allan.climberanalyzer.repo.PullingRepo;
+import com.allan.climberanalyzer.analyzer.DTOClass.InputNumbers;
+import com.allan.climberanalyzer.analyzer.repo.FingerRepo;
+import com.allan.climberanalyzer.analyzer.repo.PullingRepo;
 
 @Service
 public class CalculateGradeService {

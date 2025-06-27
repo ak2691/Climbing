@@ -1,4 +1,4 @@
-package com.allan.climberanalyzer.model;
+package com.allan.climberanalyzer.analyzer.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -7,13 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class PullingStrengthModel {
+public class ExerciseModel {
     @Id
     private int id;
-    private int bouldering_grade_v;
-    private int bodyweight_percentage;
-
+    private String exercise;
+    private String category;
+    private String priority;
 }

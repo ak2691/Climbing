@@ -1,10 +1,14 @@
-package com.allan.climberanalyzer.controller;
+package com.allan.climberanalyzer.analyzer.controller;
 
 import java.net.ResponseCache;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,11 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.allan.climberanalyzer.DTOClass.InputNumbers;
-import com.allan.climberanalyzer.DTOClass.UserResult;
-import com.allan.climberanalyzer.service.AnalyzeResultService;
-import com.allan.climberanalyzer.service.AnalyzeResultsTwoService;
-import com.allan.climberanalyzer.service.CalculateGradeService;
+import com.allan.climberanalyzer.analyzer.DTOClass.InputNumbers;
+import com.allan.climberanalyzer.analyzer.DTOClass.UserResult;
+import com.allan.climberanalyzer.analyzer.service.AnalyzeResultService;
+import com.allan.climberanalyzer.analyzer.service.AnalyzeResultsTwoService;
+import com.allan.climberanalyzer.analyzer.service.CalculateGradeService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @CrossOrigin
 @RestController
@@ -39,7 +46,10 @@ public class AnalyzerController {
     @PostMapping("/calculator")
     public ResponseEntity<?> calculateClimbingGrade(@RequestBody InputNumbers numbers) {
         try {
-            return new ResponseEntity<>(calculateGradeService.calculateClimbingGrade(numbers), HttpStatus.OK);
+
+            List<Integer> ret = calculateGradeService.calculateClimbingGrade(numbers);
+
+            return new ResponseEntity<>(ret, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

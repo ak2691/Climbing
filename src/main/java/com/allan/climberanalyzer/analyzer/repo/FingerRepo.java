@@ -1,11 +1,11 @@
-package com.allan.climberanalyzer.repo;
+package com.allan.climberanalyzer.analyzer.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
-import com.allan.climberanalyzer.model.FingerStrengthModel;
+import com.allan.climberanalyzer.analyzer.model.FingerStrengthModel;
 
 @Component
 public interface FingerRepo extends JpaRepository<FingerStrengthModel, Integer> {

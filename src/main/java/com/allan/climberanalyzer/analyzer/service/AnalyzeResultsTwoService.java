@@ -1,4 +1,4 @@
-package com.allan.climberanalyzer.service;
+package com.allan.climberanalyzer.analyzer.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,9 +8,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.allan.climberanalyzer.DTOClass.UserResult;
-import com.allan.climberanalyzer.model.AnalysisModelTwo;
-import com.allan.climberanalyzer.repo.ExercisesRepo;
+import com.allan.climberanalyzer.analyzer.DTOClass.UserResult;
+import com.allan.climberanalyzer.analyzer.repo.ExercisesRepo;
 
 @Service
 public class AnalyzeResultsTwoService {

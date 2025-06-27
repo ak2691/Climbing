@@ -1,4 +1,4 @@
-package com.allan.climberanalyzer.DTOClass;
+package com.allan.climberanalyzer.analyzer.DTOClass;
 
 public class InputNumbers {
     private int fingerStrength;
