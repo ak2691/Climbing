@@ -78,13 +78,12 @@ public class AppConfig {
                         .permitAll()
                         .requestMatchers("/register")
                         .permitAll()
-                        .anyRequest().authenticated());
-
-        // .sessionManagement(session ->
-        // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .anyRequest().authenticated())
+                .exceptionHandling(customizer -> customizer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authenticationProvider(authenticationProvider());
-        // http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -1,5 +1,6 @@
 package com.allan.climberanalyzer.UserHandling.controller;
 
+import java.nio.file.attribute.UserPrincipal;
 import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -26,12 +28,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
 
+import com.allan.climberanalyzer.UserHandling.model.JwtResponse;
 import com.allan.climberanalyzer.UserHandling.model.LoginRequest;
 import com.allan.climberanalyzer.UserHandling.model.SignUpRequest;
 import com.allan.climberanalyzer.UserHandling.model.User;
 import com.allan.climberanalyzer.UserHandling.model.UserProfile;
 import com.allan.climberanalyzer.UserHandling.repo.UserProfileRepo;
 import com.allan.climberanalyzer.UserHandling.repo.UserRepo;
+import com.allan.climberanalyzer.UserHandling.service.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -48,6 +52,9 @@ public class AuthController {
 
     // @Autowired
     // private UserProfileRepo userProfileRepo;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -69,18 +76,16 @@ public class AuthController {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-            SecurityContext context = SecurityContextHolder.createEmptyContext();
 
-            context.setAuthentication(authentication);
-            SecurityContextHolder.setContext(context);
-            SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
-            securityContextRepository.saveContext(context, request, response);
-            Map<String, String> result = new HashMap<>();
-            result.put("message", "Logged in");
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            // Only useful if we happen to switch to stateful sessions
+            // SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String jwt = jwtService.generatetoken(loginRequest.getUsername());
+
+            return new ResponseEntity<>(new JwtResponse(jwt), HttpStatus.OK);
         } catch (Exception e) {
             Map<String, String> result = new HashMap<>();
-            result.put("message", "Wrong username or password, please try again.");
+            result.put("message", e.getMessage());
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
 
