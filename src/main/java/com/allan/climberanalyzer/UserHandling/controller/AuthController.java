@@ -92,7 +92,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest,
+            BindingResult bindingResults) {
+        if (bindingResults.hasErrors()) {
+            String message = bindingResults.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(", "));
+            Map<String, Object> errors = new HashMap<>();
+            errors.put("message", message);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
         if (userRepo.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
         }
