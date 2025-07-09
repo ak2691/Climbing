@@ -20,8 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.allan.climberanalyzer.UserHandling.service.JwtService;
 import com.allan.climberanalyzer.analyzer.DTOClass.InputNumbers;
+import com.allan.climberanalyzer.analyzer.DTOClass.QuestionnaireResults;
 import com.allan.climberanalyzer.analyzer.DTOClass.RoutineRequestDTO;
+import com.allan.climberanalyzer.analyzer.DTOClass.SavedRoutineDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.SelectedStyles;
 import com.allan.climberanalyzer.analyzer.DTOClass.StyleChoiceDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.UserResult;
@@ -50,6 +53,9 @@ public class AnalyzerController {
 
     @Autowired
     RoutineService routineService;
+
+    @Autowired
+    JwtService jwtService;
 
     @GetMapping("/calculator")
     public String getCalculator() {
@@ -98,11 +104,31 @@ public class AnalyzerController {
         }
     }
 
+    @PostMapping("/userid")
+    public ResponseEntity<?> getUserIdFromJwt(@RequestBody String jwt) {
+        try {
+            Long userid = jwtService.getUserIdFromToken(jwt);
+            return new ResponseEntity<>(userid, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/generateroutine")
     public ResponseEntity<?> generateRoutine(@RequestBody RoutineRequestDTO responses) {
         try {
-            List<Map<String, String>> exerciseList = routineService.generateRoutine(responses);
-            return new ResponseEntity<>(exerciseList, HttpStatus.OK);
+            QuestionnaireResults results = routineService.generateResults(responses);
+            return new ResponseEntity<>(results, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/saveroutine")
+    public ResponseEntity<?> saveRoutine(@RequestBody SavedRoutineDTO savedRoutine) {
+        try {
+            String message = routineService.saveRoutine(savedRoutine);
+            return new ResponseEntity<>(message, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

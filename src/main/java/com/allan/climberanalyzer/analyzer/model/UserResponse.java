@@ -27,10 +27,6 @@ public class UserResponse {
     private UserAssessment assessment;
 
     @ManyToOne
-    @JoinColumn(name = "style_id")
-    private HoldStyle style;
-
-    @ManyToOne
     @JoinColumn(name = "answer_choice_id")
     private AnswerChoice selectedAnswer;
 }

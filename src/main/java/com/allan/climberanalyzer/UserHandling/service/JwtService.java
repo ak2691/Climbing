@@ -12,9 +12,12 @@ import javax.crypto.SecretKey;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.allan.climberanalyzer.UserHandling.repo.UserRepo;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -30,6 +33,8 @@ public class JwtService {
     @Value("${app.jwtExpirationInMs}")
     private int jwtExpirationInMs;
 
+    @Autowired
+    UserRepo userRepo;
     private final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
     public JwtService() {
@@ -45,7 +50,8 @@ public class JwtService {
 
     public String generatetoken(String username) {
         Map<String, Object> claims = new HashMap<>();
-
+        Long userId = userRepo.findIdByUsername(username).orElse(null);
+        claims.put("id", userId);
         return Jwts.builder()
                 .claims()
                 .add(claims)

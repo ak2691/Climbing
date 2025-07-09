@@ -26,7 +26,7 @@ public class AnswerChoice {
 
     private String answer;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "exercise_id")
     ExerciseModel exercise;
 

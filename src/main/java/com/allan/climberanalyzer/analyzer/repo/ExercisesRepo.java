@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.allan.climberanalyzer.analyzer.model.ExerciseModel;
 
-public interface ExercisesRepo extends JpaRepository<ExerciseModel, Long> {
+public interface ExercisesRepo extends JpaRepository<ExerciseModel, Integer> {
 
 }
