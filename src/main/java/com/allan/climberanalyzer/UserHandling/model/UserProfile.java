@@ -26,19 +26,19 @@ public class UserProfile {
     private User user;
 
     @Column(name = "finger_strength_grade")
-    private String fingerStrengthGrade;
+    private int fingerStrengthGrade;
 
     @Column(name = "pulling_strength_grade")
-    private String pullingStrengthGrade;
+    private int pullingStrengthGrade;
 
     @Column(name = "vertical_grade")
-    private String verticalGrade;
+    private int verticalGrade;
 
     @Column(name = "overhang_grade")
-    private String overhangGrade;
+    private int overhangGrade;
 
     @Column(name = "slab_grade")
-    private String slabGrade;
+    private int slabGrade;
 
     @Column(name = "height_cm")
     private Double heightCm;
@@ -85,43 +85,43 @@ public class UserProfile {
         this.user = user;
     }
 
-    public String getFingerStrengthGrade() {
+    public int getFingerStrengthGrade() {
         return fingerStrengthGrade;
     }
 
-    public void setFingerStrengthGrade(String fingerStrengthGrade) {
+    public void setFingerStrengthGrade(int fingerStrengthGrade) {
         this.fingerStrengthGrade = fingerStrengthGrade;
     }
 
-    public String getPullingStrengthGrade() {
+    public int getPullingStrengthGrade() {
         return pullingStrengthGrade;
     }
 
-    public void setPullingStrengthGrade(String pullingStrengthGrade) {
+    public void setPullingStrengthGrade(int pullingStrengthGrade) {
         this.pullingStrengthGrade = pullingStrengthGrade;
     }
 
-    public String getVerticalGrade() {
+    public int getVerticalGrade() {
         return verticalGrade;
     }
 
-    public void setVerticalGrade(String verticalGrade) {
+    public void setVerticalGrade(int verticalGrade) {
         this.verticalGrade = verticalGrade;
     }
 
-    public String getOverhangGrade() {
+    public int getOverhangGrade() {
         return overhangGrade;
     }
 
-    public void setOverhangGrade(String overhangGrade) {
+    public void setOverhangGrade(int overhangGrade) {
         this.overhangGrade = overhangGrade;
     }
 
-    public String getSlabGrade() {
+    public int getSlabGrade() {
         return slabGrade;
     }
 
-    public void setSlabGrade(String slabGrade) {
+    public void setSlabGrade(int slabGrade) {
         this.slabGrade = slabGrade;
     }
 
@@ -197,6 +197,10 @@ public class UserProfile {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public List<RoutineModel> getRoutines() {
+        return routines;
     }
 
 }

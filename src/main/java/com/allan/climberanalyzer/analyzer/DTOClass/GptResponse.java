@@ -5,10 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ExerciseDisplayDTO {
-    private String name;
-    private String description;
-    private int exercise_id;
+@AllArgsConstructor
+public class GptResponse {
+    public String response;
+    public String model;
+    private int tokensUsed;
+
 }

@@ -29,6 +29,8 @@ public class RoutineModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long routine_id;
 
+    private String routine_name;
+
     @ManyToOne
     @JoinColumn(name = "user_profile")
     UserProfile userProfile;
@@ -36,4 +38,5 @@ public class RoutineModel {
     @ManyToMany
     @JoinTable(name = "routine_exercises", joinColumns = @JoinColumn(name = "routine_id"), inverseJoinColumns = @JoinColumn(name = "exercise_id"))
     List<ExerciseModel> exercises;
+
 }

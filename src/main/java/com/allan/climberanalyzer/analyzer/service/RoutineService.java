@@ -17,6 +17,7 @@ import com.allan.climberanalyzer.UserHandling.repo.UserProfileRepo;
 import com.allan.climberanalyzer.UserHandling.service.JwtService;
 import com.allan.climberanalyzer.analyzer.DTOClass.ExerciseDisplayDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.QuestionnaireResults;
+import com.allan.climberanalyzer.analyzer.DTOClass.RoutineDisplayDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.RoutineRequestDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.SavedRoutineDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.SelectedStyles;
@@ -35,6 +36,7 @@ import com.allan.climberanalyzer.analyzer.repo.StyleRepo;
 
 import io.jsonwebtoken.lang.Arrays;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class RoutineService {
@@ -60,6 +62,24 @@ public class RoutineService {
     @Autowired
     UserProfileRepo userProfileRepo;
 
+    public String deleteRoutine(RoutineDisplayDTO deletedRoutine) {
+        routineRepo.deleteById(deletedRoutine.getRoutine_id());
+        return "Deleted routine id: " + deletedRoutine.getRoutine_id();
+    }
+
+    @Transactional
+    public String editRoutine(RoutineDisplayDTO changedRoutine) {
+        RoutineModel newroutine = routineRepo.findById(changedRoutine.getRoutine_id()).orElse(null);
+        newroutine.setRoutine_name(changedRoutine.getRoutine_name());
+        List<ExerciseModel> newexercises = changedRoutine.getExerciseList().stream().map(dto -> {
+            ExerciseModel exercise = exercisesRepo.findById(dto.getExercise_id()).orElse(null);
+            return exercise;
+        }).collect(Collectors.toList());
+        newroutine.setExercises(newexercises);
+        routineRepo.save(newroutine);
+        return "changed routine: " + newroutine.getRoutine_name();
+    }
+
     public String saveRoutine(SavedRoutineDTO savedRoutine) {
         RoutineModel routine = new RoutineModel();
         List<ExerciseModel> exercises = savedRoutine.getExerciseIds().stream()
@@ -67,6 +87,13 @@ public class RoutineService {
         routine.setExercises(exercises);
         UserProfile userprofile = userProfileRepo.findByUserId(savedRoutine.getUserId()).orElse(null);
         routine.setUserProfile(userprofile);
+        if (savedRoutine.getRoutine_name() == null) {
+            routine.setRoutine_name("new_routine");
+        } else if (savedRoutine.getRoutine_name() != null && savedRoutine.getRoutine_name().length() == 0) {
+            routine.setRoutine_name("new_routine");
+        } else {
+            routine.setRoutine_name(savedRoutine.getRoutine_name());
+        }
         routineRepo.save(routine);
         return "Routine saved";
 

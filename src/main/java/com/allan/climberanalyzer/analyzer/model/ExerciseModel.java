@@ -5,6 +5,7 @@ import java.util.List;
 import com.allan.climberanalyzer.UserHandling.model.RoutineModel;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -34,4 +35,7 @@ public class ExerciseModel {
 
   @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
   private List<AnswerChoice> answerChoice;
+
+  @Column(columnDefinition = "text[]")
+  private String[] keywords;
 }

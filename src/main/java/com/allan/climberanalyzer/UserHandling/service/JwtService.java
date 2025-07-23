@@ -1,5 +1,6 @@
 package com.allan.climberanalyzer.UserHandling.service;
 
+import java.lang.reflect.Field;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.allan.climberanalyzer.UserHandling.model.UserProfile;
+import com.allan.climberanalyzer.UserHandling.repo.UserProfileRepo;
 import com.allan.climberanalyzer.UserHandling.repo.UserRepo;
 
 import io.jsonwebtoken.Claims;
@@ -28,29 +31,23 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-    private String secretKey = "";
+    @Value("${app.jwtSecret}")
+    private String secretKey;
 
     @Value("${app.jwtExpirationInMs}")
     private int jwtExpirationInMs;
 
     @Autowired
     UserRepo userRepo;
+
+    @Autowired
+    UserProfileRepo userProfileRepo;
     private final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
-    public JwtService() {
-
-        try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey sk = keyGen.generateKey();
-            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String generatetoken(String username) {
+    public String generatetoken(String username) throws IllegalAccessException {
         Map<String, Object> claims = new HashMap<>();
         Long userId = userRepo.findIdByUsername(username).orElse(null);
+
         claims.put("id", userId);
         return Jwts.builder()
                 .claims()
@@ -99,6 +96,13 @@ public class JwtService {
     public Long getUserIdFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
         return Long.valueOf(claims.get("id").toString());
+    }
+
+    public UserProfile getUserProfileFromToken(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        Long userId = Long.valueOf(claims.get("id").toString());
+        UserProfile userProfile = userProfileRepo.findByUserId(userId).orElse(null);
+        return userProfile;
     }
 
     /*

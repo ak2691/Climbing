@@ -13,16 +13,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.allan.climberanalyzer.UserHandling.model.UserProfile;
 import com.allan.climberanalyzer.UserHandling.service.JwtService;
+import com.allan.climberanalyzer.analyzer.DTOClass.ExerciseDisplayDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.InputNumbers;
+import com.allan.climberanalyzer.analyzer.DTOClass.ProfileDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.QuestionnaireResults;
+import com.allan.climberanalyzer.analyzer.DTOClass.RoutineDisplayDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.RoutineRequestDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.SavedRoutineDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.SelectedStyles;
@@ -32,6 +38,8 @@ import com.allan.climberanalyzer.analyzer.model.ExerciseModel;
 import com.allan.climberanalyzer.analyzer.service.AnalyzeResultService;
 import com.allan.climberanalyzer.analyzer.service.AnalyzeResultsTwoService;
 import com.allan.climberanalyzer.analyzer.service.CalculateGradeService;
+import com.allan.climberanalyzer.analyzer.service.ExerciseService;
+import com.allan.climberanalyzer.analyzer.service.ProfileService;
 import com.allan.climberanalyzer.analyzer.service.RoutineService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,6 +64,12 @@ public class AnalyzerController {
 
     @Autowired
     JwtService jwtService;
+
+    @Autowired
+    ProfileService profileService;
+
+    @Autowired
+    ExerciseService exerciseService;
 
     @GetMapping("/calculator")
     public String getCalculator() {
@@ -128,6 +142,47 @@ public class AnalyzerController {
     public ResponseEntity<?> saveRoutine(@RequestBody SavedRoutineDTO savedRoutine) {
         try {
             String message = routineService.saveRoutine(savedRoutine);
+            return new ResponseEntity<>(message, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity<?> displayProfile(@RequestBody String jwt) {
+        try {
+            UserProfile userProfile = jwtService.getUserProfileFromToken(jwt);
+            ProfileDTO profileDTO = profileService.getProfile(userProfile);
+            return new ResponseEntity<>(profileDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/exercises")
+    public ResponseEntity<?> getExercises() {
+        try {
+            List<ExerciseDisplayDTO> exerciseDisplayDTOs = exerciseService.getExercises();
+            return new ResponseEntity<>(exerciseDisplayDTOs, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/editroutine")
+    public ResponseEntity<?> editRoutine(@RequestBody RoutineDisplayDTO changedRoutine) {
+        try {
+            String message = routineService.editRoutine(changedRoutine);
+            return new ResponseEntity<>(message, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/deleteroutine")
+    public ResponseEntity<?> deleteRoutine(@RequestBody RoutineDisplayDTO deletedRoutine) {
+        try {
+            String message = routineService.deleteRoutine(deletedRoutine);
             return new ResponseEntity<>(message, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

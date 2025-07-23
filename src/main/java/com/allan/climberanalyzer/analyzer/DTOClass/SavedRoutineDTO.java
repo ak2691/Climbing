@@ -14,4 +14,5 @@ import lombok.NoArgsConstructor;
 public class SavedRoutineDTO {
     List<Integer> exerciseIds;
     Long userId;
+    String routine_name;
 }
