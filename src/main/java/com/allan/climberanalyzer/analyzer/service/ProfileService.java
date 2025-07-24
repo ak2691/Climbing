@@ -3,10 +3,12 @@ package com.allan.climberanalyzer.analyzer.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.allan.climberanalyzer.UserHandling.model.RoutineModel;
 import com.allan.climberanalyzer.UserHandling.model.UserProfile;
+import com.allan.climberanalyzer.UserHandling.repo.UserProfileRepo;
 import com.allan.climberanalyzer.analyzer.DTOClass.ExerciseDisplayDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.ProfileDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.RoutineDisplayDTO;
@@ -14,10 +16,26 @@ import com.allan.climberanalyzer.analyzer.DTOClass.RoutineDisplayDTO;
 @Service
 public class ProfileService {
 
+    @Autowired
+    private UserProfileRepo userProfileRepo;
+
+    public String editProfile(ProfileDTO profileDTO) {
+        UserProfile userProfile = userProfileRepo.findByUserId(profileDTO.getUser_id()).orElse(null);
+        userProfile.setVerticalGrade(profileDTO.getVerticalGrade());
+        userProfile.setOverhangGrade(profileDTO.getOverhangGrade());
+        userProfile.setSlabGrade(profileDTO.getSlabGrade());
+        userProfile.setFingerStrengthGrade(profileDTO.getFingerStrengthGrade());
+        userProfile.setPullingStrengthGrade(profileDTO.getPullingStrengthGrade());
+        userProfile.setHeightIn((double) profileDTO.getHeightIn());
+        userProfile.setWeightLb((double) profileDTO.getWeightLb());
+        userProfileRepo.save(userProfile);
+        return "Profile changed!";
+    }
+
     public ProfileDTO getProfile(UserProfile userProfile) {
         ProfileDTO profile = new ProfileDTO();
         profile.setUsername(userProfile.getUser().getUsername());
-
+        profile.setUser_id(userProfile.getUser().getId());
         profile.setFingerStrengthGrade(userProfile.getFingerStrengthGrade());
         profile.setPullingStrengthGrade(userProfile.getPullingStrengthGrade());
         profile.setVerticalGrade(userProfile.getVerticalGrade());

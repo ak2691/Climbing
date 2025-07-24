@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.util.http.parser.HttpHeaderParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class GptService {
         this.restTemplate = restTemplate;
     }
 
-    public List<ExerciseDisplayDTO> generateResponse(GptRequest request) {
+    public List<ExerciseDisplayDTO> generateResponse(GptRequest request) throws BadRequestException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
@@ -79,7 +80,9 @@ public class GptService {
         );
         requestBody.put("messages",
                 Arrays.asList(systemPrompt, Map.of("role", "user", "content", request.getMessage())));
-
+        if (request.getMessage().trim().length() > 100) {
+            throw new BadRequestException("Input too long, limit to 100 tokens or approximately 400 characters");
+        }
         requestBody.put("max_completion_tokens", request.getMaxTokens());
         requestBody.put("temperature", request.getTemperature());
 

@@ -159,6 +159,17 @@ public class AnalyzerController {
         }
     }
 
+    @PutMapping("/editprofile")
+    public ResponseEntity<?> editProfile(@RequestBody ProfileDTO profileDTO) {
+        try {
+            String message = profileService.editProfile(profileDTO);
+            return new ResponseEntity<>(message, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/exercises")
     public ResponseEntity<?> getExercises() {
         try {

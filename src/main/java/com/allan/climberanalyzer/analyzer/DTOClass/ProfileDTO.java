@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 public class ProfileDTO {
     private String username;
 
+    private Long user_id;
+
     private int fingerStrengthGrade;
 
     private int pullingStrengthGrade;
