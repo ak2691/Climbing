@@ -62,6 +62,8 @@ public class RoutineService {
     @Autowired
     UserProfileRepo userProfileRepo;
 
+    private int MAX_ROUTINES = 10;
+
     public String deleteRoutine(RoutineDisplayDTO deletedRoutine) {
         routineRepo.deleteById(deletedRoutine.getRoutine_id());
         return "Deleted routine id: " + deletedRoutine.getRoutine_id();
@@ -80,8 +82,14 @@ public class RoutineService {
         return "changed routine: " + newroutine.getRoutine_name();
     }
 
-    public String saveRoutine(SavedRoutineDTO savedRoutine) {
+    public RoutineDisplayDTO saveRoutine(SavedRoutineDTO savedRoutine) {
         RoutineModel routine = new RoutineModel();
+        UserProfile profile = userProfileRepo.findByUserId(savedRoutine.getUserId()).orElse(null);
+
+        List<RoutineModel> routineList = routineRepo.findAllByUserProfile(profile).orElse(null);
+        if (routineList.size() >= MAX_ROUTINES) {
+            throw new RuntimeException("User has reached maximum routine limit of 10");
+        }
         List<ExerciseModel> exercises = savedRoutine.getExerciseIds().stream()
                 .map(id -> exercisesRepo.findById(id).orElse(null)).collect(Collectors.toList());
         routine.setExercises(exercises);
@@ -94,9 +102,25 @@ public class RoutineService {
         } else {
             routine.setRoutine_name(savedRoutine.getRoutine_name());
         }
-        routineRepo.save(routine);
-        return "Routine saved";
+        RoutineModel saved = routineRepo.save(routine);
+        RoutineDisplayDTO routineDTO = routineToDTO(saved);
+        return routineDTO;
 
+    }
+
+    public RoutineDisplayDTO routineToDTO(RoutineModel routine) {
+        RoutineDisplayDTO dto = new RoutineDisplayDTO();
+        List<ExerciseDisplayDTO> exerciseList = routine.getExercises().stream().map((exercise) -> {
+            ExerciseDisplayDTO exerciseDTO = new ExerciseDisplayDTO();
+            exerciseDTO.setName(exercise.getExercise());
+            exerciseDTO.setDescription(exercise.getDescription());
+            exerciseDTO.setExercise_id(exercise.getId());
+            return exerciseDTO;
+        }).collect(Collectors.toList());
+        dto.setExerciseList(exerciseList);
+        dto.setRoutine_id(routine.getRoutine_id());
+        dto.setRoutine_name(routine.getRoutine_name());
+        return dto;
     }
 
     public QuestionnaireResults generateResults(RoutineRequestDTO responses) {

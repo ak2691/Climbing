@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.allan.climberanalyzer.UserHandling.model.UserProfile;
 import com.allan.climberanalyzer.UserHandling.service.JwtService;
+import com.allan.climberanalyzer.analyzer.DTOClass.CreateExerciseRequest;
 import com.allan.climberanalyzer.analyzer.DTOClass.ExerciseDisplayDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.InputNumbers;
 import com.allan.climberanalyzer.analyzer.DTOClass.ProfileDTO;
@@ -141,8 +142,8 @@ public class AnalyzerController {
     @PostMapping("/saveroutine")
     public ResponseEntity<?> saveRoutine(@RequestBody SavedRoutineDTO savedRoutine) {
         try {
-            String message = routineService.saveRoutine(savedRoutine);
-            return new ResponseEntity<>(message, HttpStatus.OK);
+            RoutineDisplayDTO routine = routineService.saveRoutine(savedRoutine);
+            return new ResponseEntity<>(routine, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -198,6 +199,17 @@ public class AnalyzerController {
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/createexercise")
+    public ResponseEntity<?> createExercise(@RequestBody CreateExerciseRequest request) {
+        try {
+            ExerciseDisplayDTO createdExercise = exerciseService.createExercise(request);
+            return new ResponseEntity<>(createdExercise, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
 }

@@ -1,5 +1,6 @@
 package com.allan.climberanalyzer.analyzer.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.allan.climberanalyzer.UserHandling.model.RoutineModel;
@@ -7,6 +8,8 @@ import com.allan.climberanalyzer.UserHandling.model.RoutineModel;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -26,6 +29,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "exercise_list")
 public class ExerciseModel {
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
   private String exercise;
   private String description;
@@ -38,4 +42,7 @@ public class ExerciseModel {
 
   @Column(columnDefinition = "text[]")
   private String[] keywords;
+
+  @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
+  private List<ExerciseImage> images = new ArrayList<>();
 }

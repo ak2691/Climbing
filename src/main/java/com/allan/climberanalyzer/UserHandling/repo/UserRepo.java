@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import com.allan.climberanalyzer.UserHandling.model.User;
 
 @Component
-public interface UserRepo extends JpaRepository<User, BigInteger> {
+public interface UserRepo extends JpaRepository<User, Long> {
     public Optional<User> findByUsername(String username);
 
     public Optional<User> findByEmail(String email);

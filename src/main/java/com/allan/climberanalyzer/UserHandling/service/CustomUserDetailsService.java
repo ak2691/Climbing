@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new UserPrincipal(user);
     }
 
-    public UserDetails loadUserById(BigInteger id) {
+    public UserDetails loadUserById(Long id) {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User with id not found: " + id));
 
