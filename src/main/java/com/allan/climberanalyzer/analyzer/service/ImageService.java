@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.hibernate.boot.model.relational.Database;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -16,6 +17,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.allan.climberanalyzer.UserHandling.service.JwtService;
 import com.allan.climberanalyzer.analyzer.model.ExerciseImage;
 import com.allan.climberanalyzer.analyzer.model.ExerciseModel;
 import com.allan.climberanalyzer.analyzer.model.ExerciseRequestImage;
@@ -37,9 +39,13 @@ public class ImageService {
     private ExercisesRepo exercisesRepo;
 
     @Autowired
-    private ExerciseRequestImageRepo exerciseRequestImageRepo;
+    DatabaseRateLimiter rateLimiter;
+
+    @Autowired
+    JwtService jwtService;
 
     public String saveTemporaryImage(MultipartFile file) {
+
         String filename = UUID.randomUUID().toString() + getExtension(file.getOriginalFilename());
 
         saveFileToDisk(file, filename);

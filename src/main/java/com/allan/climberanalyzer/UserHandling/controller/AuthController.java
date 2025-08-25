@@ -60,6 +60,7 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    
     @PostMapping("/login")
     public ResponseEntity<?> authUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult,
             HttpServletRequest request,

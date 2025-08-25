@@ -8,4 +8,6 @@ import com.allan.climberanalyzer.analyzer.model.ExerciseImage;
 
 public interface ImageRepo extends JpaRepository<ExerciseImage, Long> {
     Optional<ExerciseImage> findByFilename(String filename);
+
+    void deleteByFilename(String filename);
 }

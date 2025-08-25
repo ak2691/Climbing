@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class ExerciseRequestService {
+    private static final Logger log = LoggerFactory.getLogger(ExerciseRequestService.class);
+
     @Autowired
     private ExerciseRequestRepo exerciseRequestRepository;
 
@@ -55,8 +59,6 @@ public class ExerciseRequestService {
         ExerciseRequest request = new ExerciseRequest(dto.getName(), dto.getDescription(), userId);
         request = exerciseRequestRepository.save(request);
 
-        associateImagesWithRequest(dto.getDescription(), request.getId());
-
         return request;
     }
 
@@ -71,18 +73,15 @@ public class ExerciseRequestService {
     public void cancelUserRequest(Long userId) {
         ExerciseRequest request = exerciseRequestRepository.findByUserIdAndStatus(userId, RequestStatus.PENDING)
                 .orElseThrow(() -> new IllegalStateException("No pending request found"));
+        Pattern pattern = Pattern.compile("src=\"http://localhost:8080/api/images/([^\"]+)\"");
+        Matcher matcher = pattern.matcher(request.getDescription());
 
-        cleanupRequestImages(request);
-
-        exerciseRequestRepository.delete(request);
-    }
-
-    private void cleanupRequestImages(ExerciseRequest request) {
-
-        for (ExerciseRequestImage image : request.getImages()) {
-            exerciseRequestImageRepo.delete(image);
-
+        while (matcher.find()) {
+            String filename = matcher.group(1);
+            imageRepo.deleteByFilename(filename);
         }
+        exerciseRequestRepository.delete(request);
+
     }
 
     public ReviewExerciseRequest convertRequestToDTO(ExerciseRequest request) {
@@ -150,8 +149,21 @@ public class ExerciseRequestService {
         if (dto.getStatus() == RequestStatus.APPROVED) {
             convertRequestToExercise(request);
         }
+
         exerciseRequestRepository.save(request);
         ReviewExerciseRequest ret = convertRequestToDTO(request);
+        if (dto.getStatus() == RequestStatus.REJECTED) {
+
+            exerciseRequestRepository.delete(request);
+            Pattern pattern = Pattern.compile("src=\"http://localhost:8080/api/images/([^\"]+)\"");
+            Matcher matcher = pattern.matcher(request.getDescription());
+
+            while (matcher.find()) {
+                String filename = matcher.group(1);
+                imageRepo.deleteByFilename(filename);
+            }
+
+        }
         return ret;
     }
 
@@ -166,35 +178,15 @@ public class ExerciseRequestService {
         }
     }
 
-    private void associateImagesWithRequest(String description, Long requestId) {
-        ExerciseRequest request = exerciseRequestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Exercise request not found"));
-
-        // Find all image filenames in HTML description
-        Pattern pattern = Pattern.compile("src=\"http://localhost:8080/api/images/([^\"]+)\"");
-        Matcher matcher = pattern.matcher(description);
-
-        while (matcher.find()) {
-            String filename = matcher.group(1);
-
-            // Look for temporary ExerciseImage and convert it to ExerciseRequestImage
-            ExerciseImage tempImage = imageRepo.findByFilename(filename).orElse(null);
-            if (tempImage != null && tempImage.getExercise() == null) {
-                // Convert temporary ExerciseImage to ExerciseRequestImage
-                ExerciseRequestImage requestImage = new ExerciseRequestImage();
-                requestImage.setFilename(tempImage.getFilename());
-                requestImage.setOriginalName(tempImage.getOriginalFilename());
-                requestImage.setContentType(tempImage.getContentType());
-                requestImage.setFileSize(tempImage.getFileSize());
-                requestImage.setExerciseRequest(request);
-
-                exerciseRequestImageRepo.save(requestImage);
-
-                // Delete the temporary image record (keep file on disk)
-
-                imageService.deleteTemporaryImageRecord(tempImage.getId());
-            } else {
-                throw new EntityNotFoundException("Image not found?");
+    private void cleanupRequestImagesTest(Long requestId) {
+        List<ExerciseRequestImage> images = exerciseRequestImageRepo.findAllById(requestId);
+        for (ExerciseRequestImage image : images) {
+            try {
+                ExerciseImage exerciseImage = imageRepo.findByFilename(image.getFilename()).orElse(null);
+                imageRepo.deleteById(exerciseImage.getId());
+                exerciseRequestImageRepo.delete(image);
+            } catch (Exception e) {
+                log.error("Failed to delete image: " + image.getFilename(), e);
             }
         }
     }

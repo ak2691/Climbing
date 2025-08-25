@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.util.http.parser.HttpHeaderParser;
+import org.hibernate.boot.model.relational.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.allan.climberanalyzer.UserHandling.service.JwtService;
 import com.allan.climberanalyzer.analyzer.DTOClass.ExerciseDisplayDTO;
 import com.allan.climberanalyzer.analyzer.DTOClass.GptRequest;
 import com.allan.climberanalyzer.analyzer.DTOClass.GptResponse;
@@ -32,6 +34,9 @@ public class GptService {
     @Value("${openai.api.url:https://api.openai.com/v1/chat/completions}")
     private String apiUrl;
 
+    @Autowired
+    private DatabaseRateLimiter rateLimiter;
+
     private static final Logger gptUsageLogger = LoggerFactory.getLogger("GPT_USAGE");
 
     @Autowired
@@ -39,6 +44,9 @@ public class GptService {
 
     @Autowired
     private ExerciseService exerciseService;
+
+    @Autowired
+    private JwtService jwtService;
 
     private final RestTemplate restTemplate;
 
@@ -50,7 +58,10 @@ public class GptService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
-
+        Long userId = jwtService.getUserIdFromToken(request.getJwtToken());
+        if (!rateLimiter.isAllowed(userId, "/api/chat", 10, 60)) {
+            throw new BadRequestException("You have reached your hourly limit of 10 requests, please try again later.");
+        }
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", request.getModel());
         Map<String, String> systemPrompt = new HashMap<>();

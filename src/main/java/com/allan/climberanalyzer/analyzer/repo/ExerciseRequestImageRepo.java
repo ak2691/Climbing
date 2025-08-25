@@ -11,4 +11,6 @@ public interface ExerciseRequestImageRepo extends JpaRepository<ExerciseRequestI
     Optional<ExerciseRequestImage> findByFilename(String filename);
 
     List<ExerciseRequestImage> findByExerciseRequestIsNull();
+
+    List<ExerciseRequestImage> findAllById(Long id);
 }

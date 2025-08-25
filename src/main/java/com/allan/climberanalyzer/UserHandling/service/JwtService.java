@@ -18,11 +18,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.allan.climberanalyzer.UserHandling.model.RefreshToken;
 import com.allan.climberanalyzer.UserHandling.model.UserProfile;
+import com.allan.climberanalyzer.UserHandling.repo.RefreshTokenRepo;
 import com.allan.climberanalyzer.UserHandling.repo.UserProfileRepo;
 import com.allan.climberanalyzer.UserHandling.repo.UserRepo;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 
 import io.jsonwebtoken.io.Decoders;
@@ -37,12 +40,44 @@ public class JwtService {
     @Value("${app.jwtExpirationInMs}")
     private int jwtExpirationInMs;
 
+    @Value("${jwt.access-expiration:900000}") // 15 minutes
+    private long accessTokenExpiration;
+
+    @Value("${jwt.refresh-expiration:604800000}") // 7 days
+    private long refreshTokenExpiration;
+
+    private final RefreshTokenRepo refreshTokenRepo;
+
     @Autowired
     UserRepo userRepo;
 
     @Autowired
     UserProfileRepo userProfileRepo;
     private final Logger logger = LoggerFactory.getLogger(JwtService.class);
+
+    public JwtService(RefreshTokenRepo refreshTokenRepo) {
+        this.refreshTokenRepo = refreshTokenRepo;
+    }
+
+    public String generateAccessToken(String username) {
+        Long userId = userRepo.findIdByUsername(username).orElse(null);
+        return createToken(username, userId, accessTokenExpiration, "ACCESS");
+    }
+
+    public String generateRefreshToken(String username) {
+        Long userId = userRepo.findIdByUsername(username).orElse(null);
+        String token = createToken(username, userId, refreshTokenExpiration, "REFRESH");
+
+        // Store refresh token in database
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken(token);
+        refreshToken.setUsername(username);
+        refreshToken.setUserId(userId); // Also store userId in refresh token record
+        refreshToken.setExpiryDate(new Date(System.currentTimeMillis() + refreshTokenExpiration));
+        refreshTokenRepo.save(refreshToken);
+
+        return token;
+    }
 
     public String generatetoken(String username) throws IllegalAccessException {
         Map<String, Object> claims = new HashMap<>();
@@ -55,6 +90,21 @@ public class JwtService {
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
+                .and()
+                .signWith(getKey())
+                .compact();
+
+    }
+
+    private String createToken(String username, Long userId, Long expiration, String type) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", userId);
+        claims.put("type", type);
+        return Jwts.builder()
+                .claims()
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .and()
                 .signWith(getKey())
                 .compact();
@@ -88,9 +138,34 @@ public class JwtService {
         return expiration.before(new Date());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Boolean validateToken(String token, UserDetails userDetails, String expectedType) {
+        try {
+            Claims claims = getAllClaimsFromToken(token);
+            final String username = claims.getSubject();
+            final String tokenType = claims.get("type", String.class);
+            final Date expiration = claims.getExpiration();
+            return username.equals(userDetails.getUsername()) &&
+                    expectedType.equals(tokenType) &&
+                    !isTokenExpired(token);
+        } catch (ExpiredJwtException e) {
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    public boolean validateAccessToken(String token, UserDetails userDetails) {
+        return validateToken(token, userDetails, "ACCESS");
+    }
+
+    // Validate refresh token
+    public boolean validateRefreshToken(String token, UserDetails userDetails) {
+        if (!validateToken(token, userDetails, "REFRESH"))
+            return false;
+
+        // Check if refresh token exists in database and isn't revoked
+        return refreshTokenRepo.findByTokenAndRevokedFalse(token).isPresent();
     }
 
     public Long getUserIdFromToken(String token) {

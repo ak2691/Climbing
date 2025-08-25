@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GptRequest {
+    private String jwtToken;
     private String message;
     private String model = "gpt-4o-mini";
     private int maxTokens = 50;

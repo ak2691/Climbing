@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.allan.climberanalyzer.UserHandling.service.JwtService;
+import com.allan.climberanalyzer.analyzer.service.DatabaseRateLimiter;
 import com.allan.climberanalyzer.analyzer.service.ImageService;
 
 @RestController
@@ -24,8 +26,28 @@ public class ImageController {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    DatabaseRateLimiter rateLimiter;
+
+    @Autowired
+    JwtService jwtService;
+
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
+
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadTempImage(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadTempImage(@RequestParam("file") MultipartFile file,
+            @RequestParam("token") String jwtToken) {
+        Long userId = jwtService.getUserIdFromToken(jwtToken);
+        if (!rateLimiter.isAllowed(userId, "image-upload", 3, 60)) {
+            return new ResponseEntity<>("Image upload limit exceeded (3 per hour). Please try again later",
+                    HttpStatus.TOO_MANY_REQUESTS);
+        }
+        if (file.isEmpty()) {
+            return new ResponseEntity<>("No file uploaded. Try again.", HttpStatus.BAD_REQUEST);
+        }
+        if (file.getSize() > MAX_FILE_SIZE) {
+            return new ResponseEntity<>("File too large, maximum size is 5MB", HttpStatus.BAD_REQUEST);
+        }
         String filename = imageService.saveTemporaryImage(file);
         String imageUrl = "http://localhost:8080/api/images/" + filename;
         return ResponseEntity.ok(imageUrl);
@@ -36,6 +58,7 @@ public class ImageController {
         try {
             Resource image = imageService.loadImage(filename);
             String contentType = imageService.getContentType(filename);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType(contentType));
             return new ResponseEntity<>(image, headers, HttpStatus.OK);

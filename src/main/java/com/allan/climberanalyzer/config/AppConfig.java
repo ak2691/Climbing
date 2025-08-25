@@ -87,6 +87,8 @@ public class AppConfig {
                         .permitAll()
                         .requestMatchers("/api/register")
                         .permitAll()
+                        .requestMatchers("/api/exercises")
+                        .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(customizer -> customizer.authenticationEntryPoint(jwtAuthenticationEntryPoint))

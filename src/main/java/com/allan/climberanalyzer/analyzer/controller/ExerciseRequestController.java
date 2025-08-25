@@ -69,7 +69,7 @@ public class ExerciseRequestController {
             ExerciseRequest exerciseRequest = exerciseRequestService.createExerciseRequest(dto, userId);
             return new ResponseEntity<>(exerciseRequest, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
