@@ -34,9 +34,14 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
-    private boolean enabled = true;
+    private boolean enabled = false;
 
-    // Constructors
+    @Column(name = "verification_code")
+    private String verificationCode;
+
+    @Column(name = "verification_expiration")
+    private LocalDateTime verificationExpiration;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -85,6 +90,14 @@ public class User {
         return email;
     }
 
+    public void setEnabled(Boolean value) {
+        this.enabled = value;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -119,6 +132,22 @@ public class User {
 
     public void setUserProfile(UserProfile userProfile) {
         this.userProfile = userProfile;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationExpiration() {
+        this.verificationExpiration = LocalDateTime.now().plusMinutes(15);
+    }
+
+    public LocalDateTime getVerificationExpiration() {
+        return verificationExpiration;
     }
 
     @PreUpdate

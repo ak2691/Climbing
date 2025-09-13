@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ import io.jsonwebtoken.Jwts;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.transaction.Transactional;
 
 @Service
 public class JwtService {
@@ -102,6 +104,7 @@ public class JwtService {
         claims.put("type", type);
         return Jwts.builder()
                 .claims()
+                .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
@@ -143,7 +146,7 @@ public class JwtService {
             Claims claims = getAllClaimsFromToken(token);
             final String username = claims.getSubject();
             final String tokenType = claims.get("type", String.class);
-            final Date expiration = claims.getExpiration();
+
             return username.equals(userDetails.getUsername()) &&
                     expectedType.equals(tokenType) &&
                     !isTokenExpired(token);
@@ -180,6 +183,26 @@ public class JwtService {
         return userProfile;
     }
 
+    public void revokeRefreshToken(String token) {
+        refreshTokenRepo.findByToken(token).ifPresent(rt -> {
+            rt.setRevoked(true);
+            refreshTokenRepo.save(rt);
+        });
+    }
+
+    // Clean up expired tokens (call this in a scheduled job)
+    @Scheduled(fixedRate = 1800000)
+    @Transactional
+    public void cleanupExpiredTokens() {
+        refreshTokenRepo.deleteByExpiryDateBefore(new Date());
+    }
+
+    @Transactional
+    public void deleteTokenByUsername(String token) {
+        String username = getUsernameFromToken(token);
+
+        refreshTokenRepo.deleteByUsername(username);
+    }
     /*
      * public UserProfile getUserProfileFromToken(String token) {
      * Claims claims = getAllClaimsFromToken(token);

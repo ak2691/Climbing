@@ -1,5 +1,9 @@
 package com.allan.climberanalyzer.analyzer.model;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,9 +27,14 @@ public class ExerciseImage {
     private String originalFilename;
     private String contentType;
     private Long fileSize;
-
+    @CreationTimestamp
+    private LocalDateTime createdAt;
     @ManyToOne
     @JoinColumn(name = "exercise_id")
     private ExerciseModel exercise;
+
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    private ExerciseRequest exerciseRequest;
 
 }

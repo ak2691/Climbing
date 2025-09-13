@@ -57,6 +57,15 @@ public class ExerciseRequestService {
         }
 
         ExerciseRequest request = new ExerciseRequest(dto.getName(), dto.getDescription(), userId);
+        Pattern pattern = Pattern.compile("src=\"http://localhost:8080/api/images/([^\"]+)\"");
+        Matcher matcher = pattern.matcher(request.getDescription());
+
+        while (matcher.find()) {
+            String filename = matcher.group(1);
+            ExerciseImage exerciseImage = imageRepo.findByFilename(filename).orElse(null);
+            request.getImages().add(exerciseImage);
+            exerciseImage.setExerciseRequest(request);
+        }
         request = exerciseRequestRepository.save(request);
 
         return request;
@@ -172,10 +181,6 @@ public class ExerciseRequestService {
         ExerciseModel exercise = request.toExercise();
         exercise = exerciseRepo.save(exercise);
 
-        for (ExerciseRequestImage requestImage : request.getImages()) {
-            ExerciseImage exerciseImage = requestImage.toExerciseImage(exercise);
-            imageRepo.save(exerciseImage);
-        }
     }
 
     private void cleanupRequestImagesTest(Long requestId) {

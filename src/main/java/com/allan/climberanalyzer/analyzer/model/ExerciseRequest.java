@@ -54,7 +54,7 @@ public class ExerciseRequest {
     private String reviewNotes;
 
     @OneToMany(mappedBy = "exerciseRequest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ExerciseRequestImage> images = new ArrayList<>();
+    private List<ExerciseImage> images = new ArrayList<>();
 
     public ExerciseModel toExercise() {
         ExerciseModel exercise = new ExerciseModel();

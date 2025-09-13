@@ -3,6 +3,7 @@ package com.allan.climberanalyzer.analyzer.service;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.allan.climberanalyzer.analyzer.model.RateLimitRequest;
@@ -55,4 +56,12 @@ public class DatabaseRateLimiter {
         long recentRequests = rateLimitRepository.countRecentRequests(userId, endpoint, cutoffTime);
         return Math.max(0, maxRequests - (int) recentRequests);
     }
+
+    @Scheduled(fixedRate = 3600000)
+    @Transactional
+    public void cleanUpOrphanedRequests() {
+        LocalDateTime cutoffTime = LocalDateTime.now().minusMinutes(60);
+        rateLimitRepository.deleteOldRequests(cutoffTime);
+    }
+
 }

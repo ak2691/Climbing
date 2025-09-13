@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.catalina.connector.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -42,6 +44,7 @@ import com.allan.climberanalyzer.analyzer.service.CalculateGradeService;
 import com.allan.climberanalyzer.analyzer.service.ExerciseService;
 import com.allan.climberanalyzer.analyzer.service.ProfileService;
 import com.allan.climberanalyzer.analyzer.service.RoutineService;
+import com.allan.climberanalyzer.config.JwtFilter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -71,6 +74,8 @@ public class AnalyzerController {
 
     @Autowired
     ExerciseService exerciseService;
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
 
     @GetMapping("/calculator")
     public String getCalculator() {
@@ -151,6 +156,7 @@ public class AnalyzerController {
 
     @PostMapping("/profile")
     public ResponseEntity<?> displayProfile(@RequestBody String jwt) {
+
         try {
             UserProfile userProfile = jwtService.getUserProfileFromToken(jwt);
             ProfileDTO profileDTO = profileService.getProfile(userProfile);

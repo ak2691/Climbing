@@ -5,15 +5,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.hibernate.boot.model.relational.Database;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +48,8 @@ public class ImageService {
 
     @Autowired
     JwtService jwtService;
+
+    private static final Logger log = LoggerFactory.getLogger(ImageService.class);
 
     public String saveTemporaryImage(MultipartFile file) {
 
@@ -127,5 +134,20 @@ public class ImageService {
             throw new RuntimeException("Failed to save file: " + filename, e);
         }
 
+    }
+
+    @Scheduled(fixedRate = 1800000) // Every 30 minutes
+    public void cleanupOrphanedExerciseImages() {
+        LocalDateTime oneHourAgo = LocalDateTime.now().minusSeconds(10);
+
+        try {
+            int deletedCount = imageRepo.deleteOrphanedImages(oneHourAgo);
+
+            if (deletedCount > 0) {
+                log.info("Cleaned up {} orphaned exercise images older than 1 hour", deletedCount);
+            }
+        } catch (Exception e) {
+            log.error("Failed to cleanup orphaned exercise images", e);
+        }
     }
 }
