@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,12 @@ public class ExerciseRequestService {
     @Autowired
     private ImageService imageService;
 
+    @Value("${app.image-url-base}")
+    private String imageUrlBase;
+
+    @Autowired
+    private StorageService storageService;
+
     public ExerciseRequest createExerciseRequest(CreateExerciseRequest dto, Long userId) {
 
         if (exerciseRequestRepository.existsByUserIdAndStatus(userId, RequestStatus.PENDING)) {
@@ -57,7 +64,7 @@ public class ExerciseRequestService {
         }
 
         ExerciseRequest request = new ExerciseRequest(dto.getName(), dto.getDescription(), userId);
-        Pattern pattern = Pattern.compile("src=\"http://localhost:8080/api/images/([^\"]+)\"");
+        Pattern pattern = Pattern.compile("src=\"" + Pattern.quote(imageUrlBase) + "/([^\"]+)\"");
         Matcher matcher = pattern.matcher(request.getDescription());
 
         while (matcher.find()) {
@@ -82,12 +89,13 @@ public class ExerciseRequestService {
     public void cancelUserRequest(Long userId) {
         ExerciseRequest request = exerciseRequestRepository.findByUserIdAndStatus(userId, RequestStatus.PENDING)
                 .orElseThrow(() -> new IllegalStateException("No pending request found"));
-        Pattern pattern = Pattern.compile("src=\"http://localhost:8080/api/images/([^\"]+)\"");
+        Pattern pattern = Pattern.compile("src=\"" + Pattern.quote(imageUrlBase) + "/([^\"]+)\"");
         Matcher matcher = pattern.matcher(request.getDescription());
 
         while (matcher.find()) {
             String filename = matcher.group(1);
             imageRepo.deleteByFilename(filename);
+            storageService.deleteFile(filename);
         }
         exerciseRequestRepository.delete(request);
 
@@ -164,12 +172,13 @@ public class ExerciseRequestService {
         if (dto.getStatus() == RequestStatus.REJECTED) {
 
             exerciseRequestRepository.delete(request);
-            Pattern pattern = Pattern.compile("src=\"http://localhost:8080/api/images/([^\"]+)\"");
+            Pattern pattern = Pattern.compile("src=\"" + Pattern.quote(imageUrlBase) + "/([^\"]+)\"");
             Matcher matcher = pattern.matcher(request.getDescription());
 
             while (matcher.find()) {
                 String filename = matcher.group(1);
                 imageRepo.deleteByFilename(filename);
+                storageService.deleteFile(filename);
             }
 
         }
