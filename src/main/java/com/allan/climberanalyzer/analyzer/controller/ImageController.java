@@ -2,6 +2,7 @@ package com.allan.climberanalyzer.analyzer.controller;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,12 +20,19 @@ import org.springframework.web.multipart.MultipartFile;
 import com.allan.climberanalyzer.UserHandling.service.JwtService;
 import com.allan.climberanalyzer.analyzer.service.DatabaseRateLimiter;
 import com.allan.climberanalyzer.analyzer.service.ImageService;
+import com.allan.climberanalyzer.analyzer.service.StorageService;
 
 @RestController
 @RequestMapping("/api/images")
 public class ImageController {
     @Autowired
+    private StorageService storageService;
+
+    @Autowired
     private ImageService imageService;
+
+    @Value("${app.image-url-base}")
+    private String imageUrlBase;
 
     @Autowired
     DatabaseRateLimiter rateLimiter;
@@ -49,14 +57,14 @@ public class ImageController {
             return new ResponseEntity<>("File too large, maximum size is 5MB", HttpStatus.BAD_REQUEST);
         }
         String filename = imageService.saveTemporaryImage(file);
-        String imageUrl = "http://localhost:8080/api/images/" + filename;
+        String imageUrl = imageUrlBase + "/" + filename;
         return ResponseEntity.ok(imageUrl);
     }
 
     @GetMapping("/{filename}")
     public ResponseEntity<?> getImage(@PathVariable String filename) {
         try {
-            Resource image = imageService.loadImage(filename);
+            Resource image = storageService.loadFile(filename);
             String contentType = imageService.getContentType(filename);
 
             HttpHeaders headers = new HttpHeaders();
