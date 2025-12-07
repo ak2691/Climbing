@@ -34,8 +34,9 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ImageService {
-    @Value("${app.upload.dir:uploads}")
-    private String uploadDir;
+
+    @Autowired
+    private StorageService storageService;
 
     @Autowired
     private ImageRepo imageRepo;
@@ -55,7 +56,7 @@ public class ImageService {
 
         String filename = UUID.randomUUID().toString() + getExtension(file.getOriginalFilename());
 
-        saveFileToDisk(file, filename);
+        storageService.saveFile(file, filename);
 
         ExerciseImage exerciseImage = new ExerciseImage();
         exerciseImage.setFilename(filename);
@@ -94,20 +95,6 @@ public class ImageService {
 
     }
 
-    public Resource loadImage(String filename) {
-        try {
-            Path filePath = Paths.get(uploadDir).resolve(filename);
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists() && resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("Image not found: " + filename);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load image", e);
-        }
-    }
-
     public String getContentType(String filename) {
         ExerciseImage image = imageRepo.findByFilename(filename)
                 .orElseThrow(() -> new RuntimeException("Image not found"));
@@ -119,21 +106,6 @@ public class ImageService {
             return "";
         }
         return originalFilename.substring(originalFilename.lastIndexOf("."));
-    }
-
-    private void saveFileToDisk(MultipartFile file, String filename) {
-        try {
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            Path filePath = uploadPath.resolve(filename);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save file: " + filename, e);
-        }
-
     }
 
     @Scheduled(fixedRate = 1800000) // Every 30 minutes
