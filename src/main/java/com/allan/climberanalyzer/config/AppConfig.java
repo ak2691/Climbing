@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 // import javax.net.ssl.X509TrustManager;
 
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -46,6 +47,9 @@ import com.allan.climberanalyzer.UserHandling.service.CustomUserDetailsService;
 public class AppConfig {
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Value("${cors.allowed.origins}")
+    private String allowedOriginsString;
 
     @Autowired
     private JwtFilter jwtFilter;
@@ -112,7 +116,8 @@ public class AppConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // The origin of your frontend application
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Or whatever your frontend port is
+        configuration.setAllowedOrigins(Arrays.asList(allowedOriginsString.split(","))); // Or whatever your frontend
+                                                                                         // port is
         // The HTTP methods you want to allow
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // The headers you want to allow

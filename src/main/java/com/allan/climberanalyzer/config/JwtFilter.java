@@ -67,22 +67,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
             jwtToken = tokenHeader.substring(7);
-            logger.info("🔍 JWT Filter - Extracted token: {}...",
+            logger.info("JWT Filter - Extracted token: {}...",
                     jwtToken.substring(0, Math.min(20, jwtToken.length())));
 
             try {
                 username = jwtService.getUsernameFromToken(jwtToken);
-                logger.info("✅ JWT Filter - Extracted username: {}", username);
+                logger.info("JWT Filter - Extracted username: {}", username);
             } catch (IllegalArgumentException e) {
-                logger.error("❌ JWT Filter - Unable to get JWT token: {}", e.getMessage());
+                logger.error("JWT Filter - Unable to get JWT token: {}", e.getMessage());
             } catch (ExpiredJwtException e) {
-                logger.error("❌ JWT Filter - JWT token expired: {}", e.getMessage());
-                logger.error("❌ JWT Filter - Token was: {}...", jwtToken.substring(0, Math.min(20, jwtToken.length())));
+                logger.error("JWT Filter - JWT token expired: {}", e.getMessage());
+                logger.error("JWT Filter - Token was: {}...", jwtToken.substring(0, Math.min(20, jwtToken.length())));
             } catch (Exception e) {
-                logger.error("❌ JWT Filter - Unexpected JWT error: {}", e.getMessage());
+                logger.error("JWT Filter - Unexpected JWT error: {}", e.getMessage());
             }
         } else {
-            logger.warn("⚠️ JWT Filter - No Bearer token found for: {}", requestPath);
+            logger.warn("JWT Filter - No Bearer token found for: {}", requestPath);
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
