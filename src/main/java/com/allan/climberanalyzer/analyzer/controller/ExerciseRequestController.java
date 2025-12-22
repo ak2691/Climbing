@@ -67,7 +67,7 @@ public class ExerciseRequestController {
         try {
             Long userId = getUserIdFromToken(request);
             ExerciseRequest exerciseRequest = exerciseRequestService.createExerciseRequest(dto, userId);
-            return new ResponseEntity<>("Sent", HttpStatus.OK);
+            return new ResponseEntity<>(exerciseRequest, HttpStatus.OK);
         } catch (Exception e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
