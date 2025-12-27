@@ -43,7 +43,7 @@ public class EmailService {
                         "</div>" +
                         "<p><strong>This code will expire in 15 minutes.</strong></p>" +
                         "<p>If you didn't create an account, please ignore this email.</p>" +
-                        "<br><p>Best regards,<br>Your App Team</p>" +
+                        "<br><p>Best regards,<br>AlkClimbing</p>" +
                         "</body></html>",
                 verificationCode);
     }
